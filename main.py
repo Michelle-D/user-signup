@@ -39,7 +39,7 @@ page_footer = """
 
 import webapp2
 
-class Index(webapp2.RequestHandler):
+class MainHandler(webapp2.RequestHandler):
     """ Handles requests coming in to '/' (the root of our site)
     """
 
@@ -54,17 +54,21 @@ class Index(webapp2.RequestHandler):
                 Username
                 <input type="text" name="username"/>
             </label>
+            <br>
             <label>
                 Password
                 <input type="text" name="password"/>
             </label>
+            <br>
             <label>
                 Verify password
                 <input type="text" name="verify_password"/>
             </label>
+            <br>
             <label>
                 Email (optional)
                 <input type="text" name="email"/>
+            <br>
             <input type="submit" value="Submit"/>
         </form>
         """
@@ -83,9 +87,27 @@ class Index(webapp2.RequestHandler):
             verify_password = self.request.get('verify_password')
             email = self.request.get('email')
 
-class MainHandler(webapp2.RequestHandler):
-    def get(self):
-        self.response.write('Hello world!')
+            params = dict(username = username,
+                email = email)
+
+            if not valid_username(username):
+                params['error_username'] = "That's not a valid username"
+                have_error = True
+
+            if not valid_password(password):
+                params['error_password'] = "That wasn't a valid password"
+                have_error = True
+            elif password != verify_password:
+                params['error_verify'] = "Your passwords didn't match"
+                have_error = True
+
+            if not valid_email(email):
+                params['error_email'] = "That's not a valid email"
+                have_error = True
+
+#class MainHandler(webapp2.RequestHandler):
+#    def get(self):
+#        self.response.write('Hello world!')
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler)

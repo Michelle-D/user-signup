@@ -112,26 +112,29 @@ class Signup(webapp2.RequestHandler):
         def valid_username(self, username):
             user_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
             return user_RE.match(username)
-            if not valid_username:
-                error = "That's not a valid username".format(username)
-                error_escaped = cgi.escape(error, quote=True)
-                self.redirect("/?error=" + error_escaped)
+
+        if not valid_username:
+            error = "That's not a valid username".format(username)
+            error_escaped = cgi.escape(error, quote=True)
+            self.redirect("/?error=" + error_escaped)
 
         def valid_password(self, password):
             password_RE = re.compile(r"^.{3,20}$")
             return password_RE.match(password)
-            if not valid_password:
-                error = "That wasn't a valid password".format(password)
-                error_escaped = cgi.escape(error, quote=True)
-                self.redirect("/?error=" + error_escaped)
+
+        if not valid_password:
+            error = "That wasn't a valid password".format(password)
+            error_escaped = cgi.escape(error, quote=True)
+            self.redirect("/?error=" + error_escaped)
 
         def valid_email(self, email):
             email_RE = re.compile(r"^[\S]+@[\S]+.[\S]+$")
             return email_RE.match(email)
-            if not valid_email:
-                error = "That's not a valid email".format(email)
-                error_escaped = cgi.escape(error, quote=True)
-                self.redirect("/?error=" + error_escaped)
+
+        if not valid_email:
+            error = "That's not a valid email".format(email)
+            error_escaped = cgi.escape(error, quote=True)
+            self.redirect("/?error=" + error_escaped)
 
 class Welcome(webapp2.RequestHandler):
     """ Handles requests coming in to welcome screen

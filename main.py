@@ -101,9 +101,12 @@ class Index(webapp2.RequestHandler):
         content = page_header + main_content + page_footer
         self.response.write(content)
 
-class Signup(webapp2.RequestHandler):
+#class Signup(webapp2.RequestHandler):
+#    def get(self):
+#        self.response.write(content)
 
     def post (self):
+        have_error = False
         username = self.request.get('username')
         password = self.request.get('password')
         verify = self.request.get('verify_password')
@@ -143,12 +146,11 @@ class Welcome(webapp2.RequestHandler):
         username = self.request.get('username')
         if valid_username(self):
             sentence = "Welcome, " + username + "!"
-            content = page_header + "<p>" + sentence + "</p>" + page_footer
-            self.response.write(content)
+            welcome_content = page_header + "<p>" + sentence + "</p>" + page_footer
+            self.response.write(welcome_content)
 
 
 app = webapp2.WSGIApplication([
     ('/', Index),
-    ('/signup', Signup),
     ('/welcome', Welcome)
 ], debug=True)

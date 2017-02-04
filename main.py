@@ -40,6 +40,25 @@ page_footer = """
 import webapp2
 import cgi
 import re
+import logging
+
+logger = logging.getLogger(__name__)
+
+user_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
+def valid_username(username):
+    logger.warning(str(username and user_RE.match(username)))
+    return username and user_RE.match(username)
+
+password_RE = re.compile(r"^.{3,20}$")
+def valid_password(password):
+    logger.warning(str(password and password_RE.match(password)))
+    return password and password_RE.match(password)
+
+email_RE = re.compile(r"^[\S]+@[\S]+.[\S]+$")
+def valid_email(email):
+    logger.warning(str(not email or email_RE.match(email)))
+    return not email or email_RE.match(email)
+
 
 class Index(webapp2.RequestHandler):
     """ Handles requests coming in to '/' (the root of our site)
@@ -101,9 +120,9 @@ class Index(webapp2.RequestHandler):
         content = page_header + main_content + page_footer
         self.response.write(content)
 
-#class Signup(webapp2.RequestHandler):
-#    def get(self):
-#        self.response.write(content)
+class Signup(webapp2.RequestHandler):
+    def get(self):
+        self.response.write(content)
 
     def post (self):
         have_error = False
@@ -112,30 +131,21 @@ class Index(webapp2.RequestHandler):
         verify = self.request.get('verify_password')
         email = self.request.get('email')
 
-        def valid_username(self, username):
-            user_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
-            return user_RE.match(username)
-
-        if not valid_username:
-            error = "That's not a valid username".format(username)
+        if not valid_username(username):
+            error = "That's not a valid username"
             error_escaped = cgi.escape(error, quote=True)
             self.redirect("/?error=" + error_escaped)
 
-        def valid_password(self, password):
-            password_RE = re.compile(r"^.{3,20}$")
-            return password_RE.match(password)
-
-        if not valid_password:
-            error = "That wasn't a valid password".format(password)
+        if not valid_password(password):
+            error = "That wasn't a valid password"
             error_escaped = cgi.escape(error, quote=True)
             self.redirect("/?error=" + error_escaped)
+        elif password!=verify:
+            error = "Your passwords didn't match"
 
-        def valid_email(self, email):
-            email_RE = re.compile(r"^[\S]+@[\S]+.[\S]+$")
-            return email_RE.match(email)
-
-        if not valid_email:
-            error = "That's not a valid email".format(email)
+        if not valid_email(email):
+            logger.warning("email")
+            error = "That's not a valid email"
             error_escaped = cgi.escape(error, quote=True)
             self.redirect("/?error=" + error_escaped)
 
@@ -152,5 +162,6 @@ class Welcome(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
     ('/', Index),
+    ('/signup', Signup),
     ('/welcome', Welcome)
 ], debug=True)
